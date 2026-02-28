@@ -201,7 +201,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       } else if (finalOldString === finalNewString) {
         error = {
           display: `No changes to apply. The old_string and new_string are identical.`,
-          raw: `No changes to apply. The old_string and new_string are identical in file: ${params.file_path}`,
+          raw: `No changes to apply. The old_string and new_string are identical in file: ${params.file_path}:1`,
           type: ToolErrorType.EDIT_NO_CHANGE,
         };
       }
@@ -209,7 +209,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       // Should not happen if fileExists and no exception was thrown, but defensively:
       error = {
         display: `Failed to read content of file.`,
-        raw: `Failed to read content of existing file: ${params.file_path}`,
+        raw: `Failed to read content of existing file: ${params.file_path}:1`,
         type: ToolErrorType.READ_CONTENT_FAILURE,
       };
     }
@@ -227,7 +227,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       error = {
         display:
           'No changes to apply. The new content is identical to the current content.',
-        raw: `No changes to apply. The new content is identical to the current content in file: ${params.file_path}`,
+        raw: `No changes to apply. The new content is identical to the current content in file: ${params.file_path}:1`,
         type: ToolErrorType.EDIT_NO_CHANGE,
       };
     }
@@ -436,10 +436,11 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
         ),
       );
 
+      const newContentLineCount = editData.newContent.split('\n').length;
       const llmSuccessMessageParts = [
         editData.isNewFile
-          ? `Created new file: ${this.params.file_path} with provided content.`
-          : `The file: ${this.params.file_path} has been updated.`,
+          ? `Created new file: ${this.params.file_path}:1 with provided content.`
+          : `The file: ${this.params.file_path}:${newContentLineCount} has been updated.`,
       ];
 
       const snippetResult = extractEditSnippet(
