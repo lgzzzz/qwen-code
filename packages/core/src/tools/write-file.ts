@@ -129,7 +129,7 @@ class WriteFileToolInvocation extends BaseToolInvocation<
       this.params.file_path,
       this.config.getTargetDir(),
     );
-    return `Writing to ${shortenPath(relativePath)}`;
+    return `Writing to ${shortenPath(relativePath)}:1`;
   }
 
   override async shouldConfirmExecute(
@@ -210,7 +210,7 @@ class WriteFileToolInvocation extends BaseToolInvocation<
     if (correctedContentResult.error) {
       const errDetails = correctedContentResult.error;
       const errorMsg = errDetails.code
-        ? `Error checking existing file '${file_path}:1': ${errDetails.message} (${errDetails.code})`
+        ? `Error checking existing file '${file_path}': ${errDetails.message} (${errDetails.code})`
         : `Error checking existing file: ${errDetails.message}`;
       return {
         llmContent: errorMsg,
@@ -281,11 +281,10 @@ class WriteFileToolInvocation extends BaseToolInvocation<
         content,
       );
 
-      const lineCount = fileContent.split('\n').length;
       const llmSuccessMessageParts = [
         isNewFile
-          ? `Successfully created and wrote to new file: ${file_path}:1.`
-          : `Successfully overwrote file: ${file_path}:${lineCount}.`,
+          ? `Successfully created and wrote to new file: ${file_path}.`
+          : `Successfully overwrote file: ${file_path}.`,
       ];
       if (modified_by_user) {
         llmSuccessMessageParts.push(
@@ -298,6 +297,8 @@ class WriteFileToolInvocation extends BaseToolInvocation<
       const programmingLanguage = getLanguageFromFilePath(file_path);
       const extension = path.extname(file_path);
       const operation = isNewFile ? FileOperation.CREATE : FileOperation.UPDATE;
+
+      const lineCount = fileContent.split('\n').length;
       logFileOperation(
         this.config,
         new FileOperationEvent(
@@ -329,17 +330,17 @@ class WriteFileToolInvocation extends BaseToolInvocation<
 
       if (isNodeError(error)) {
         // Handle specific Node.js errors with their error codes
-        errorMsg = `Error writing to file '${file_path}:1': ${error.message} (${error.code})`;
+        errorMsg = `Error writing to file '${file_path}': ${error.message} (${error.code})`;
 
         // Log specific error types for better debugging
         if (error.code === 'EACCES') {
-          errorMsg = `Permission denied writing to file: ${file_path}:1 (${error.code})`;
+          errorMsg = `Permission denied writing to file: ${file_path} (${error.code})`;
           errorType = ToolErrorType.PERMISSION_DENIED;
         } else if (error.code === 'ENOSPC') {
-          errorMsg = `No space left on device: ${file_path}:1 (${error.code})`;
+          errorMsg = `No space left on device: ${file_path} (${error.code})`;
           errorType = ToolErrorType.NO_SPACE_LEFT;
         } else if (error.code === 'EISDIR') {
-          errorMsg = `Target is a directory, not a file: ${file_path}:1 (${error.code})`;
+          errorMsg = `Target is a directory, not a file: ${file_path} (${error.code})`;
           errorType = ToolErrorType.TARGET_IS_DIRECTORY;
         }
 

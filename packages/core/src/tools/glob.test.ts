@@ -190,11 +190,10 @@ describe('GlobTool', () => {
         .filter(Boolean);
 
       expect(filesListed).toHaveLength(2);
-      // Remove line number suffix for comparison
-      expect(path.resolve(filesListed[0].replace(/:1$/, ''))).toBe(
+      expect(path.resolve(filesListed[0])).toBe(
         path.resolve(tempRootDir, 'newer.sortme'),
       );
-      expect(path.resolve(filesListed[1].replace(/:1$/, ''))).toBe(
+      expect(path.resolve(filesListed[1])).toBe(
         path.resolve(tempRootDir, 'older.sortme'),
       );
     });

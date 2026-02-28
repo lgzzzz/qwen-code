@@ -18,7 +18,8 @@ export type EditorType =
   | 'neovim'
   | 'zed'
   | 'emacs'
-  | 'trae';
+  | 'trae'
+  | 'micro';
 
 function isValidEditorType(editor: string): editor is EditorType {
   return [
@@ -31,6 +32,7 @@ function isValidEditorType(editor: string): editor is EditorType {
     'zed',
     'emacs',
     'trae',
+    'micro',
   ].includes(editor);
 }
 
@@ -68,6 +70,7 @@ export const editorCommands: Record<
   zed: { win32: ['zed'], default: ['zed', 'zeditor'] },
   emacs: { win32: ['emacs.exe'], default: ['emacs'] },
   trae: { win32: ['trae'], default: ['trae'] },
+  micro: { win32: ['micro.exe'], default: ['micro'] },
 };
 
 export function checkHasEditorType(editor: EditorType): boolean {
@@ -159,6 +162,7 @@ export function getDiffCommand(
         command: 'emacs',
         args: ['--eval', `(ediff "${oldPath}" "${newPath}")`],
       };
+    case 'micro':
     default:
       return null;
   }
@@ -182,7 +186,7 @@ export async function openDiff(
   }
 
   try {
-    const isTerminalEditor = ['vim', 'emacs', 'neovim'].includes(editor);
+    const isTerminalEditor = ['vim', 'emacs', 'neovim', 'micro'].includes(editor);
 
     if (isTerminalEditor) {
       try {

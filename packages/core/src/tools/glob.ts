@@ -187,24 +187,7 @@ class GlobToolInvocation extends BaseToolInvocation<
       const sortedAbsolutePaths = entriesToShow.map((entry) =>
         entry.fullpath(),
       );
-
-      // Get line count for each file
-      const fileListWithLineNumbers = await Promise.all(
-        sortedAbsolutePaths.map(async (filePath) => {
-          try {
-            const content = await this.config
-              .getFileSystemService()
-              .readTextFile(filePath);
-            const lineCount = content.split('\n').length;
-            return `${filePath}:${lineCount}`;
-          } catch (_) {
-            // If we can't read the file, default to line 1
-            return `${filePath}:1`;
-          }
-        }),
-      );
-
-      const fileListDescription = fileListWithLineNumbers.join('\n');
+      const fileListDescription = sortedAbsolutePaths.join('\n');
 
       let resultMessage = `Found ${totalFileCount} file(s) matching "${this.params.pattern}" ${searchLocationDescription}`;
       resultMessage += `, sorted by modification time (newest first):\n---\n${fileListDescription}`;

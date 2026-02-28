@@ -638,10 +638,10 @@ describe('WriteFileTool', () => {
 
       expect(result.error?.type).toBe(ToolErrorType.PERMISSION_DENIED);
       expect(result.llmContent).toContain(
-        `Permission denied writing to file: ${filePath}:1 (EACCES)`,
+        `Permission denied writing to file: ${filePath} (EACCES)`,
       );
       expect(result.returnDisplay).toContain(
-        `Permission denied writing to file: ${filePath}:1 (EACCES)`,
+        `Permission denied writing to file: ${filePath} (EACCES)`,
       );
     });
 
@@ -664,10 +664,10 @@ describe('WriteFileTool', () => {
 
       expect(result.error?.type).toBe(ToolErrorType.NO_SPACE_LEFT);
       expect(result.llmContent).toContain(
-        `No space left on device: ${filePath}:1 (ENOSPC)`,
+        `No space left on device: ${filePath} (ENOSPC)`,
       );
       expect(result.returnDisplay).toContain(
-        `No space left on device: ${filePath}:1 (ENOSPC)`,
+        `No space left on device: ${filePath} (ENOSPC)`,
       );
     });
 
@@ -697,10 +697,10 @@ describe('WriteFileTool', () => {
 
       expect(result.error?.type).toBe(ToolErrorType.TARGET_IS_DIRECTORY);
       expect(result.llmContent).toContain(
-        `Target is a directory, not a file: ${dirPath}:1 (EISDIR)`,
+        `Target is a directory, not a file: ${dirPath} (EISDIR)`,
       );
       expect(result.returnDisplay).toContain(
-        `Target is a directory, not a file: ${dirPath}:1 (EISDIR)`,
+        `Target is a directory, not a file: ${dirPath} (EISDIR)`,
       );
 
       vi.spyOn(fs, 'existsSync').mockImplementation(originalExistsSync);

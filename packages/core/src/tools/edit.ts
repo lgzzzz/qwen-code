@@ -116,6 +116,12 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
     public params: EditToolParams,
   ) {}
 
+  /**
+   * Stores the line number range of the edit after execution.
+   * Populated by execute() for use in getDescriptionWithLineNumber().
+   */
+  private editLineNumberRange?: { start: number; end: number };
+
   toolLocations(): ToolLocation[] {
     return [{ path: this.params.file_path }];
   }
@@ -201,7 +207,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       } else if (finalOldString === finalNewString) {
         error = {
           display: `No changes to apply. The old_string and new_string are identical.`,
-          raw: `No changes to apply. The old_string and new_string are identical in file: ${params.file_path}:1`,
+          raw: `No changes to apply. The old_string and new_string are identical in file: ${params.file_path}`,
           type: ToolErrorType.EDIT_NO_CHANGE,
         };
       }
@@ -209,7 +215,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       // Should not happen if fileExists and no exception was thrown, but defensively:
       error = {
         display: `Failed to read content of file.`,
-        raw: `Failed to read content of existing file: ${params.file_path}:1`,
+        raw: `Failed to read content of existing file: ${params.file_path}`,
         type: ToolErrorType.READ_CONTENT_FAILURE,
       };
     }
@@ -227,7 +233,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       error = {
         display:
           'No changes to apply. The new content is identical to the current content.',
-        raw: `No changes to apply. The new content is identical to the current content in file: ${params.file_path}:1`,
+        raw: `No changes to apply. The new content is identical to the current content in file: ${params.file_path}`,
         type: ToolErrorType.EDIT_NO_CHANGE,
       };
     }
@@ -318,7 +324,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       this.config.getTargetDir(),
     );
     if (this.params.old_string === '') {
-      return `Create ${shortenPath(relativePath)}`;
+      return `Create ${shortenPath(relativePath)}:1`;
     }
 
     const oldStringSnippet =
@@ -329,9 +335,16 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       (this.params.new_string.length > 30 ? '...' : '');
 
     if (this.params.old_string === this.params.new_string) {
-      return `No file changes to ${shortenPath(relativePath)}`;
+      return `No file changes to ${shortenPath(relativePath)}:1`;
     }
-    return `${shortenPath(relativePath)}: ${oldStringSnippet} => ${newStringSnippet}`;
+
+    // Use stored line number range if available (set by execute())
+    if (this.editLineNumberRange) {
+      const { start } = this.editLineNumberRange;
+      return `${shortenPath(relativePath)}:${start}, ${oldStringSnippet} => ${newStringSnippet}`;
+    }
+
+    return `${shortenPath(relativePath)}:1, ${oldStringSnippet} => ${newStringSnippet}`;
   }
 
   /**
@@ -436,18 +449,23 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
         ),
       );
 
-      const newContentLineCount = editData.newContent.split('\n').length;
       const llmSuccessMessageParts = [
         editData.isNewFile
-          ? `Created new file: ${this.params.file_path}:1 with provided content.`
-          : `The file: ${this.params.file_path}:${newContentLineCount} has been updated.`,
+          ? `Created new file: ${this.params.file_path} with provided content.`
+          : `The file: ${this.params.file_path} has been updated.`,
       ];
 
       const snippetResult = extractEditSnippet(
         editData.currentContent,
         editData.newContent,
       );
+
+      // Store line number range for getDescriptionWithLineNumber()
       if (snippetResult) {
+        this.editLineNumberRange = {
+          start: snippetResult.startLine,
+          end: snippetResult.endLine,
+        };
         const snippetText = `Showing lines ${snippetResult.startLine}-${snippetResult.endLine} of ${snippetResult.totalLines} from the edited file:\n\n---\n\n${snippetResult.content}`;
         llmSuccessMessageParts.push(snippetText);
       }
