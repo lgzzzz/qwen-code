@@ -63,7 +63,7 @@ class ReadFileToolInvocation extends BaseToolInvocation<
 
     const { offset, limit } = this.params;
     if (offset !== undefined && limit !== undefined) {
-      return `${shortPath}:${offset+1} (lines ${offset + 1}-${offset + limit})`;
+      return `${shortPath}:${offset + 1} (lines ${offset + 1}-${offset + limit})`;
     } else if (offset !== undefined) {
       return `${shortPath}:${offset + 1} (from line ${offset + 1})`;
     } else if (limit !== undefined) {

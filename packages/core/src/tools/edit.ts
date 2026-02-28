@@ -324,7 +324,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       this.config.getTargetDir(),
     );
     if (this.params.old_string === '') {
-      return `Create ${shortenPath(relativePath)}`;
+      return `Create ${shortenPath(relativePath)}:1`;
     }
 
     const oldStringSnippet =
