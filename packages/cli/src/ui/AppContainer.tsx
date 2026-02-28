@@ -1220,9 +1220,9 @@ export const AppContainer = (props: AppContainerProps) => {
         return;
       }
 
-      let enteringConstrainHeightMode = false;
+      // let enteringConstrainHeightMode = false;
       if (!constrainHeight) {
-        enteringConstrainHeightMode = true;
+        // enteringConstrainHeightMode = true;
         setConstrainHeight(true);
       }
 
@@ -1240,17 +1240,18 @@ export const AppContainer = (props: AppContainerProps) => {
         ideContextState
       ) {
         handleSlashCommand('/ide status');
-      } else if (
-        keyMatchers[Command.SHOW_MORE_LINES](key) &&
-        !enteringConstrainHeightMode
-      ) {
-        setConstrainHeight(false);
       } else if (keyMatchers[Command.TOGGLE_SHELL_INPUT_FOCUS](key)) {
         if (activePtyId || embeddedShellFocused) {
           setEmbeddedShellFocused((prev) => !prev);
         }
       }
     },
+    // else if (
+    //     keyMatchers[Command.SHOW_MORE_LINES](key) &&
+    //     !enteringConstrainHeightMode
+    //   ) {
+    //     setConstrainHeight(false);
+    //   }
     [
       constrainHeight,
       setConstrainHeight,

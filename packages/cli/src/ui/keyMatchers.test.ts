@@ -58,14 +58,14 @@ describe('keyMatchers', () => {
       key.ctrl && key.name === 'g',
     [Command.QUIT]: (key: Key) => key.ctrl && key.name === 'c',
     [Command.EXIT]: (key: Key) => key.ctrl && key.name === 'd',
-    [Command.SHOW_MORE_LINES]: (key: Key) => key.ctrl && key.name === 's',
+    // [Command.SHOW_MORE_LINES]: (key: Key) => key.ctrl && key.name === 's',
     [Command.REVERSE_SEARCH]: (key: Key) => key.ctrl && key.name === 'r',
     [Command.SUBMIT_REVERSE_SEARCH]: (key: Key) =>
       key.name === 'return' && !key.ctrl,
     [Command.ACCEPT_SUGGESTION_REVERSE_SEARCH]: (key: Key) =>
       key.name === 'tab',
     [Command.TOGGLE_SHELL_INPUT_FOCUS]: (key: Key) =>
-      key.ctrl && key.name === 'f',
+      key.ctrl && key.name === 's',
     [Command.EXPAND_SUGGESTION]: (key: Key) => key.name === 'right',
     [Command.COLLAPSE_SUGGESTION]: (key: Key) => key.name === 'left',
   };
@@ -247,11 +247,11 @@ describe('keyMatchers', () => {
       positive: [createKey('d', { ctrl: true })],
       negative: [createKey('d'), createKey('c', { ctrl: true })],
     },
-    {
-      command: Command.SHOW_MORE_LINES,
-      positive: [createKey('s', { ctrl: true })],
-      negative: [createKey('s'), createKey('l', { ctrl: true })],
-    },
+    // {
+    //   command: Command.SHOW_MORE_LINES,
+    //   positive: [createKey('s', { ctrl: true })],
+    //   negative: [createKey('s'), createKey('l', { ctrl: true })],
+    // },
 
     // Shell commands
     {
@@ -271,8 +271,8 @@ describe('keyMatchers', () => {
     },
     {
       command: Command.TOGGLE_SHELL_INPUT_FOCUS,
-      positive: [createKey('f', { ctrl: true })],
-      negative: [createKey('f')],
+      positive: [createKey('s', { ctrl: true })],
+      negative: [createKey('s')],
     },
   ];
 

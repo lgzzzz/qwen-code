@@ -49,7 +49,7 @@ export enum Command {
   TOGGLE_IDE_CONTEXT_DETAIL = 'toggleIDEContextDetail',
   QUIT = 'quit',
   EXIT = 'exit',
-  SHOW_MORE_LINES = 'showMoreLines',
+  // SHOW_MORE_LINES = 'showMoreLines',
 
   // Shell commands
   REVERSE_SEARCH = 'reverseSearch',
