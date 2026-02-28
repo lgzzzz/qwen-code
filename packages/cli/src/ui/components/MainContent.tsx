@@ -6,7 +6,7 @@
 
 import { Box, Static } from 'ink';
 import { HistoryItemDisplay } from './HistoryItemDisplay.js';
-import { ShowMoreLines } from './ShowMoreLines.js';
+// import { ShowMoreLines } from './ShowMoreLines.js';
 import { Notifications } from './Notifications.js';
 import { OverflowProvider } from '../contexts/OverflowContext.js';
 import { useUIState } from '../contexts/UIStateContext.js';
@@ -28,7 +28,7 @@ export const MainContent = () => {
     terminalWidth,
     mainAreaWidth,
     staticAreaMaxItemHeight,
-    availableTerminalHeight,
+    // availableTerminalHeight,
   } = uiState;
 
   return (
@@ -60,9 +60,10 @@ export const MainContent = () => {
           {pendingHistoryItems.map((item, i) => (
             <HistoryItemDisplay
               key={i}
-              availableTerminalHeight={
-                uiState.constrainHeight ? availableTerminalHeight : undefined
-              }
+              // availableTerminalHeight={
+              //   uiState.constrainHeight ? availableTerminalHeight: undefined
+              //}
+              availableTerminalHeight={undefined}
               terminalWidth={terminalWidth}
               mainAreaWidth={mainAreaWidth}
               item={{ ...item, id: 0 }}
@@ -72,7 +73,7 @@ export const MainContent = () => {
               embeddedShellFocused={uiState.embeddedShellFocused}
             />
           ))}
-          <ShowMoreLines constrainHeight={uiState.constrainHeight} />
+          {/*<ShowMoreLines constrainHeight={uiState.constrainHeight} />*/}
         </Box>
       </OverflowProvider>
     </>

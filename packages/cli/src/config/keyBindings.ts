@@ -169,14 +169,14 @@ export const defaultKeyBindings: KeyBindingConfig = {
   [Command.TOGGLE_IDE_CONTEXT_DETAIL]: [{ key: 'g', ctrl: true }],
   [Command.QUIT]: [{ key: 'c', ctrl: true }],
   [Command.EXIT]: [{ key: 'd', ctrl: true }],
-  [Command.SHOW_MORE_LINES]: [{ key: 's', ctrl: true }],
+  // [Command.SHOW_MORE_LINES]: [{ key: 'm', ctrl: true }],
 
   // Shell commands
   [Command.REVERSE_SEARCH]: [{ key: 'r', ctrl: true }],
   // Note: original logic ONLY checked ctrl=false, ignored meta/shift/paste
   [Command.SUBMIT_REVERSE_SEARCH]: [{ key: 'return', ctrl: false }],
   [Command.ACCEPT_SUGGESTION_REVERSE_SEARCH]: [{ key: 'tab' }],
-  [Command.TOGGLE_SHELL_INPUT_FOCUS]: [{ key: 'f', ctrl: true }],
+  [Command.TOGGLE_SHELL_INPUT_FOCUS]: [{ key: 's', ctrl: true }],
 
   // Suggestion expansion
   [Command.EXPAND_SUGGESTION]: [{ key: 'right' }],

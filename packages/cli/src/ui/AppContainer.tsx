@@ -5,38 +5,39 @@
  */
 
 import {
-  useMemo,
-  useState,
   useCallback,
   useEffect,
-  useRef,
   useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
-import { type DOMElement, measureElement } from 'ink';
+import { type DOMElement, measureElement, useStdin, useStdout } from 'ink';
 import { App } from './App.js';
 import { AppContext } from './contexts/AppContext.js';
-import { UIStateContext, type UIState } from './contexts/UIStateContext.js';
+import { type UIState, UIStateContext } from './contexts/UIStateContext.js';
 import {
-  UIActionsContext,
   type UIActions,
+  UIActionsContext,
 } from './contexts/UIActionsContext.js';
 import { ConfigContext } from './contexts/ConfigContext.js';
 import {
   type HistoryItem,
-  ToolCallStatus,
   type HistoryItemWithoutId,
+  MessageType,
+  StreamingState,
+  ToolCallStatus,
 } from './types.js';
-import { MessageType, StreamingState } from './types.js';
 import {
-  type EditorType,
   type Config,
-  type IdeInfo,
-  type IdeContext,
-  IdeClient,
-  ideContextStore,
   createDebugLogger,
-  getErrorMessage,
+  type EditorType,
   getAllGeminiMdFilenames,
+  getErrorMessage,
+  IdeClient,
+  type IdeContext,
+  ideContextStore,
+  type IdeInfo,
   ShellExecutionService,
   Storage,
 } from '@qwen-code/qwen-code-core';
@@ -58,7 +59,6 @@ import { useSlashCommandProcessor } from './hooks/slashCommandProcessor.js';
 import { useVimMode } from './contexts/VimModeContext.js';
 import { useTerminalSize } from './hooks/useTerminalSize.js';
 import { calculatePromptWidths } from './components/InputPrompt.js';
-import { useStdin, useStdout } from 'ink';
 import ansiEscapes from 'ansi-escapes';
 import * as fs from 'node:fs';
 import { basename } from 'node:path';
@@ -72,8 +72,8 @@ import { type LoadedSettings, SettingScope } from '../config/settings.js';
 import { type InitializationResult } from '../core/initializer.js';
 import { useFocus } from './hooks/useFocus.js';
 import { useBracketedPaste } from './hooks/useBracketedPaste.js';
-import { useKeypress, type Key } from './hooks/useKeypress.js';
-import { keyMatchers, Command } from './keyMatchers.js';
+import { type Key, useKeypress } from './hooks/useKeypress.js';
+import { Command, keyMatchers } from './keyMatchers.js';
 import { useLoadingIndicator } from './hooks/useLoadingIndicator.js';
 import { useFolderTrust } from './hooks/useFolderTrust.js';
 import { useIdeTrustListener } from './hooks/useIdeTrustListener.js';
@@ -89,10 +89,10 @@ import { useAutoAcceptIndicator } from './hooks/useAutoAcceptIndicator.js';
 import { useSessionStats } from './contexts/SessionContext.js';
 import { useGitBranchName } from './hooks/useGitBranchName.js';
 import {
-  useExtensionUpdates,
   useConfirmUpdateRequests,
-  useSettingInputRequests,
+  useExtensionUpdates,
   usePluginChoiceRequests,
+  useSettingInputRequests,
 } from './hooks/useExtensionUpdates.js';
 import { useCodingPlanUpdates } from './hooks/useCodingPlanUpdates.js';
 import { ShellFocusContext } from './contexts/ShellFocusContext.js';
