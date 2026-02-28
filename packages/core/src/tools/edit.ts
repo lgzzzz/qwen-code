@@ -23,7 +23,7 @@ import { ApprovalMode } from '../config/config.js';
 import { FileEncoding } from '../services/fileSystemService.js';
 import { DEFAULT_DIFF_OPTIONS, getDiffStat } from './diffOptions.js';
 import { ReadFileTool } from './read-file.js';
-import { ToolNames, ToolDisplayNames } from './tool-names.js';
+import { ToolDisplayNames, ToolNames } from './tool-names.js';
 import { logFileOperation } from '../telemetry/loggers.js';
 import { FileOperationEvent } from '../telemetry/types.js';
 import { FileOperation } from '../telemetry/metrics.js';
@@ -324,7 +324,7 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       this.config.getTargetDir(),
     );
     if (this.params.old_string === '') {
-      return `Create ${shortenPath(relativePath)}:1`;
+      return `Create ${shortenPath(relativePath)}`;
     }
 
     const oldStringSnippet =
@@ -335,16 +335,13 @@ class EditToolInvocation implements ToolInvocation<EditToolParams, ToolResult> {
       (this.params.new_string.length > 30 ? '...' : '');
 
     if (this.params.old_string === this.params.new_string) {
-      return `No file changes to ${shortenPath(relativePath)}:1`;
+      return `No file changes to ${shortenPath(relativePath)}`;
     }
-
-    // Use stored line number range if available (set by execute())
     if (this.editLineNumberRange) {
       const { start } = this.editLineNumberRange;
-      return `${shortenPath(relativePath)}:${start}, ${oldStringSnippet} => ${newStringSnippet}`;
+      return `${shortenPath(relativePath)}: ${shortenPath(relativePath)}:${start} ${oldStringSnippet} => ${newStringSnippet}`;
     }
-
-    return `${shortenPath(relativePath)}:1, ${oldStringSnippet} => ${newStringSnippet}`;
+    return `${shortenPath(relativePath)}: ${shortenPath(relativePath)}:1 ${oldStringSnippet} => ${newStringSnippet}`;
   }
 
   /**
