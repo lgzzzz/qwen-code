@@ -5,22 +5,21 @@
  */
 
 import path from 'node:path';
-import { makeRelative, shortenPath } from '../utils/paths.js';
+import { isSubpath, makeRelative, shortenPath } from '../utils/paths.js';
 import type { ToolInvocation, ToolLocation, ToolResult } from './tools.js';
 import { BaseDeclarativeTool, BaseToolInvocation, Kind } from './tools.js';
-import { ToolNames, ToolDisplayNames } from './tool-names.js';
+import { ToolDisplayNames, ToolNames } from './tool-names.js';
 
 import type { PartUnion } from '@google/genai';
 import {
-  processSingleFileContent,
   getSpecificMimeType,
+  processSingleFileContent,
 } from '../utils/fileUtils.js';
 import type { Config } from '../config/config.js';
 import { FileOperation } from '../telemetry/metrics.js';
 import { getProgrammingLanguage } from '../telemetry/telemetry-utils.js';
 import { logFileOperation } from '../telemetry/loggers.js';
 import { FileOperationEvent } from '../telemetry/types.js';
-import { isSubpath } from '../utils/paths.js';
 import { Storage } from '../config/storage.js';
 
 /**
@@ -60,14 +59,19 @@ class ReadFileToolInvocation extends BaseToolInvocation<
       this.config.getTargetDir(),
     );
     const shortPath = shortenPath(relativePath);
-
     const { offset, limit } = this.params;
+    let middle;
     if (offset !== undefined && limit !== undefined) {
-      return `${shortPath} (lines ${offset + 1}-${offset + limit})`;
+      middle = offset + limit / 2;
+    } else {
+      middle = 1;
+    }
+    if (offset !== undefined && limit !== undefined) {
+      return `${shortPath}:${middle} (lines ${offset + 1}-${offset + limit})`;
     } else if (offset !== undefined) {
-      return `${shortPath} (from line ${offset + 1})`;
+      return `${shortPath}:${middle} (from line ${offset + 1})`;
     } else if (limit !== undefined) {
-      return `${shortPath} (first ${limit} lines)`;
+      return `${shortPath}:${middle} (first ${limit} lines)`;
     }
 
     return shortPath;
