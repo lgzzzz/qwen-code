@@ -157,7 +157,6 @@ export const DiffRenderer: React.FC<DiffRendererProps> = ({
     renderedOutput = colorizeCode(
       addedContent,
       language,
-      tabWidth,
       availableTerminalHeight,
       contentWidth,
       theme,
