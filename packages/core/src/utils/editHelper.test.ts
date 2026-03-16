@@ -84,20 +84,34 @@ const two = 2;
     });
   });
 
+  it('check space', () => {
+    const result = normalizeEditStrings(
+      'console.log("hi")',
+      ' c o ns o l e . l o g ("hi")\n',
+      'console.log("bye")\n',
+    );
+    expect(result).toEqual({
+      oldString: 'console.log("hi")',
+      newString: 'console.log("bye")',
+    });
+  });
+
   // Tests for issue #1618: Preserve trailing whitespace in newString
   describe('trailing whitespace preservation in newString', () => {
     it('preserves trailing whitespace when intentionally adding to end of line', () => {
       // Test with tab
       const result1 = normalizeEditStrings(
-        'value = 1;\n',
+        'value    =      1;\n',
         'value = 1;\n',
         'value = 1;\t\n',
       );
-      expect(result1.newString).toBe('value = 1;\t\n');
+      expect(result1.oldString).toBe('value    =      1;');
+      expect(result1.newString).toBe('value = 1;\t');
 
       // Test with spaces (same behavior, just different whitespace char)
       const result2 = normalizeEditStrings('text\n', 'text\n', 'text   \n');
-      expect(result2.newString).toBe('text   \n');
+      expect(result2.oldString).toBe('text');
+      expect(result2.newString).toBe('text   ');
     });
 
     it('preserves newString trailing whitespace even when oldString is fuzzy matched', () => {
@@ -107,8 +121,8 @@ const two = 2;
         'value = 2;   \n', // LLM replacement also has spaces
       );
       expect(result).toEqual({
-        oldString: 'value = 1;\n', // Canonical from file
-        newString: 'value = 2;   \n', // Preserved as LLM intended
+        oldString: 'value = 1;', // Canonical from file
+        newString: 'value = 2;   ', // Preserved as LLM intended
       });
     });
 
@@ -119,6 +133,7 @@ const two = 2;
         'const s = "";',
         'const s = `line1  \nline2`;', // Trailing spaces after line1 are significant
       );
+      expect(result.oldString).toBe('const s = "";');
       expect(result.newString).toBe('const s = `line1  \nline2`;');
     });
 
@@ -136,28 +151,77 @@ const two = 2;
 
     it('still supports fuzzy matching after trailing whitespace was added in previous edit', () => {
       // Round 1: Add trailing spaces to a line
-      let fileContent = 'value = 1;\n';
       const round1 = normalizeEditStrings(
-        fileContent,
+        'value = 1;\nvalue1= 2;\nvalue2=3',
         'value = 1;\n',
         'value = 1;   \n', // Adding trailing spaces
       );
-      expect(round1.newString).toBe('value = 1;   \n');
-
-      // Simulate the edit being applied
-      fileContent = fileContent.replace(round1.oldString, round1.newString);
-      expect(fileContent).toBe('value = 1;   \n'); // File now has trailing spaces
+      expect(round1.oldString).toBe('value = 1;');
+      expect(round1.newString).toBe('value = 1;   ');
 
       // Round 2: LLM tries to edit again, but its oldString doesn't have trailing spaces
       // (because LLM context may not preserve exact whitespace)
       const round2 = normalizeEditStrings(
-        fileContent,
+        'value = 1;\nvalue1= 2;\nvalue2=3',
         'value = 1;\n', // LLM thinks there's no trailing spaces
         'value = 2;\n',
       );
       // Fuzzy matching should still find the line and return canonical slice WITH trailing spaces
-      expect(round2.oldString).toBe('value = 1;   \n');
-      expect(round2.newString).toBe('value = 2;\n');
+      expect(round2.oldString).toBe('value = 1;');
+      expect(round2.newString).toBe('value = 2;');
+
+      const round3 = normalizeEditStrings(
+        'value = 1;\nvalue1= 2;\nvalue2=3',
+        'value = 1;',
+        'value = 1;   \n', // Adding trailing spaces
+      );
+      expect(round3.oldString).toBe('value = 1;');
+      expect(round3.newString).toBe('value = 1;   \n');
+
+      const round4 = normalizeEditStrings(
+        'value = 1;\nvalue1= 2;\nvalue2=3',
+        '\nvalue1=2;',
+        '\nvalue = 4;   \n', // Adding trailing spaces
+      );
+      expect(round4.oldString).toBe('value1= 2;');
+      expect(round4.newString).toBe('value = 4;   \n');
+    });
+
+    it('check new line', () => {
+      const round4 = normalizeEditStrings(
+        'value = 1;\nvalue1= 2;\nvalue2=3',
+        '\nvalue1=2;',
+        'value = 4;   \n', // Adding trailing spaces
+      );
+      expect(round4.oldString).toBe('\nvalue1= 2;');
+      expect(round4.newString).toBe('value = 4;   \n');
+    });
+
+    it('check empty', () => {
+      // Round 1: Add trailing spaces to a line
+      const round1 = normalizeEditStrings(
+        'value = 1;\nvalue1= 2;\nvalue2=3',
+        '',
+        'value = 1;   \n', // Adding trailing spaces
+      );
+      expect(round1.oldString).toBe('');
+      expect(round1.newString).toBe('value = 1;   \n');
+
+      const round2 = normalizeEditStrings(
+        'value   = 1;\nvalue1= 2;\nvalue2=3',
+        'value = 1;\n',
+        '', // Adding trailing spaces
+      );
+      expect(round2.oldString).toBe('value   = 1;\n');
+      expect(round2.newString).toBe('');
+
+      const round3 = normalizeEditStrings(
+        'value = 1;\nvalue1= 2;\nvalue2=3;',
+        'value2 = 3;\n',
+        '', // Adding trailing spaces
+      );
+      expect(round3.oldString).toBe('value2=3;');
+      expect(round3.newString).toBe('');
     });
   });
 });
